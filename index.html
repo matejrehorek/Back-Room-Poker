@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* apply the chosen theme before the page paints */try{var t=localStorage.getItem('brh-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Back Room Hold'em</title>
 <meta name="description" content="Free play-money No-Limit Texas Hold'em against up to five AI opponents, with positions, live equity and an exact odds calculator. No real-money gambling.">
@@ -66,6 +67,10 @@ button{cursor:pointer}
 .tabs a+a{border-left:1px solid var(--line-2)}
 .tabs a[aria-current="page"]{color:var(--inv-fg);background:var(--inv-bg)}
 .tabs a:hover:not([aria-current="page"]){color:var(--fg);background:var(--surface-2)}
+.tabs button{border:0;background:none;padding:6px 12px;color:var(--muted);font:500 13px var(--f-mono)}
+.tabs button+button{border-left:1px solid var(--line-2)}
+.tabs button[aria-pressed="true"]{color:var(--inv-fg);background:var(--inv-bg)}
+.tabs button:hover:not([aria-pressed="true"]){color:var(--fg);background:var(--surface-2)}
 .ghost{background:var(--surface);border:1px solid var(--line-2);border-radius:4px;padding:6px 12px;font:500 13px var(--f-mono)}
 .ghost:hover{border-color:var(--fg)}
 
@@ -76,7 +81,7 @@ button{cursor:pointer}
 .felt{position:absolute;inset:60px 60px;border-radius:50%;background:var(--field);border:1px solid var(--field-line);box-shadow:0 0 0 7px var(--bg),0 0 0 8px var(--line-2)}
 .felt::before{content:"";position:absolute;inset:13%;border-radius:50%;border:1px dashed var(--line-2)}
 .felt::after{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px dotted var(--line)}
-.felt-mark{position:absolute;left:50%;bottom:15%;transform:translateX(-50%);font:11px var(--f-mono);letter-spacing:.08em;color:var(--muted);white-space:nowrap;pointer-events:none;background:var(--field);padding:0 6px;z-index:1}
+.felt-mark{position:absolute;left:0;top:0;font:11px var(--f-mono);letter-spacing:.08em;color:var(--muted);white-space:nowrap;pointer-events:none;background:var(--bg);padding:0 6px 0 0;z-index:1}
 .center{position:absolute;left:50%;top:50%;transform:translate(-50%,-56%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2}
 .pot{font:12.5px var(--f-mono);background:var(--surface);border:1px solid var(--line-2);padding:2px 10px;border-radius:3px;min-height:22px}
 .pot b{font-weight:600}
@@ -118,6 +123,7 @@ button{cursor:pointer}
 .seat.out{opacity:.35}
 .seat.winner .plate{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--inv-bg)}
 .seat.winner .plate .stk .bbs,.seat.winner .plate .act,.seat.winner .plate .pos{color:var(--inv-fg);border-color:var(--inv-fg)}
+.bet.dead{opacity:.5}
 .bet{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;font:600 12px var(--f-mono);font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--line-2);padding:1px 6px;border-radius:3px;z-index:2;white-space:nowrap}
 .chip{width:7px;height:7px;background:var(--fg);flex:none}
 .btag{font:600 9.5px/1 var(--f-mono);padding:2px 3px;border-radius:2px;background:var(--inv-bg);color:var(--inv-fg)}
@@ -167,6 +173,7 @@ input[type=range]{accent-color:var(--fg);width:150px}
 .standings td+td{padding-left:14px}
 .standings td:nth-child(n+2){text-align:right;font:12px var(--f-mono)}
 .standings .style{display:block;font:11px var(--f-mono);color:var(--muted)}
+.standings .reads{display:block;margin-top:2px;font:10.5px var(--f-mono);color:var(--fg-2);white-space:nowrap}
 .opts{display:flex;flex-direction:column;gap:9px}
 .opt{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
 .opt select{background:var(--bg);border:1px solid var(--line-2);border-radius:3px;padding:3px 6px;font:12.5px var(--f-mono)}
@@ -189,6 +196,11 @@ input[type=range]{accent-color:var(--fg);width:150px}
 .form label{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
 .form select{background:var(--bg);border:1px solid var(--line-2);border-radius:3px;padding:5px 8px;min-width:150px;font:13px var(--f-mono)}
 .form input[type=checkbox]{accent-color:var(--fg);width:16px;height:16px}
+.lineup{border:0;margin:0 0 4px;padding:0;display:grid;gap:7px;min-width:0}
+.lineup legend{padding:0;margin-bottom:8px;font-size:14px}
+.lineup legend span{color:var(--muted);font:12px var(--f-mono);margin-left:4px}
+.form .lineup label{justify-content:flex-start;gap:10px;font-size:13.5px;cursor:pointer}
+.lineup .tg{margin-left:auto;color:var(--muted);font:12px var(--f-mono);text-align:right}
 .dialog .row{margin-top:18px}
 .primary{padding:8px 16px;border-radius:4px;border:1px solid var(--inv-bg);background:var(--inv-bg);color:var(--inv-fg);font-weight:600}
 .primary:hover{opacity:.88}
@@ -289,6 +301,10 @@ input[type=range]{accent-color:var(--fg);width:150px}
       <a href="#table" id="tab-table">Table</a>
       <a href="#odds-lab" id="tab-lab">Odds Lab</a>
     </nav>
+    <div class="tabs" id="theme-switch" role="group" aria-label="Colour theme">
+      <button type="button" data-theme-set="light">Light</button>
+      <button type="button" data-theme-set="dark">Dark</button>
+    </div>
     <button class="ghost" id="open-settings" type="button">New game…</button>
   </header>
 
@@ -297,7 +313,8 @@ input[type=range]{accent-color:var(--fg);width:150px}
       <div class="play-grid">
         <div class="table-col">
           <div class="arena" id="arena">
-            <div class="felt" id="felt"><div class="felt-mark" id="felt-mark">Back Room · No Limit</div></div>
+            <div class="felt" id="felt"></div>
+            <div class="felt-mark" id="felt-mark">Back Room · No Limit</div>
             <div class="center">
               <div class="pot" id="pot"></div>
               <div class="board" id="board"></div>
@@ -348,6 +365,7 @@ input[type=range]{accent-color:var(--fg);width:150px}
           <div class="panel">
             <h2>Standings</h2>
             <table class="standings"><tbody id="standings"></tbody></table>
+            <p class="note"><b>VPIP</b> how often a player puts money in before the flop · <b>PFR</b> how often they raise before the flop · <b>AGG</b> share of bets and raises after the flop</p>
           </div>
           <div class="panel">
             <h2>Table options</h2>
@@ -416,9 +434,7 @@ input[type=range]{accent-color:var(--fg);width:150px}
     <h2 id="set-title">New game</h2>
     <p>Starting a new game resets every stack and clears the hand history.</p>
     <div class="form">
-      <label for="set-opp">Opponents
-        <select id="set-opp"><option value="1">1 (heads-up)</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
-      </label>
+      <fieldset class="lineup" id="set-lineup"><legend>Opponents <span id="set-opp-n"></span></legend></fieldset>
       <label for="set-stack">Starting stack
         <select id="set-stack"><option value="500">500</option><option value="1000">1,000</option><option value="2000">2,000</option><option value="5000">5,000</option></select>
       </label>
@@ -594,12 +610,26 @@ const SPEED = {
 };
 const DIFF = { easy: { iters: 220, noise: .16 }, normal: { iters: 500, noise: .08 }, hard: { iters: 1200, noise: .03 } };
 const BOTS = [
-  { name: 'Rook', tag: 'Tight-aggressive', tight: .75, aggr: .7,  bluff: .08 },
-  { name: 'Vex',  tag: 'Loose-aggressive', tight: .25, aggr: .85, bluff: .2 },
-  { name: 'Dot',  tag: 'Calling station',  tight: .15, aggr: .12, bluff: .03 },
-  { name: 'Pell', tag: 'Rock',             tight: .92, aggr: .3,  bluff: .02 },
-  { name: 'Juno', tag: 'Balanced',         tight: .55, aggr: .5,  bluff: .1 },
+  // vpip / pfr: share of hands a style plays / raises before the flop at a full six-handed table
+  { name: 'Rook', tag: 'Tight-aggressive', tight: .75, aggr: .7,  bluff: .08, vpip: .22, pfr: .18 },
+  { name: 'Vex',  tag: 'Loose-aggressive', tight: .25, aggr: .85, bluff: .2,  vpip: .42, pfr: .32 },
+  { name: 'Dot',  tag: 'Calling station',  tight: .15, aggr: .12, bluff: .03, vpip: .64, pfr: .05 },
+  { name: 'Pell', tag: 'Rock',             tight: .92, aggr: .3,  bluff: .02, vpip: .17, pfr: .11 },
+  { name: 'Juno', tag: 'Balanced',         tight: .55, aggr: .5,  bluff: .1,  vpip: .27, pfr: .18 },
 ];
+// The 169 starting hands, strongest first, ranked by heads-up all-in equity against a random hand.
+const PRE_ORDER = 'AA KK QQ JJ TT 99 88 AKs AQs 77 AKo ATs AJs AQo AJo 66 KQs A9s KJs ATo KTs A8s KQo A7s A9o KJo QJs 55 K9s QTs A8o KTo A5s A6s A4s A7o QJo K8s K7s A3s A5o JTs K9o Q9s A2s A6o 44 QTo A4o K6s Q8s A3o K5s J9s K7o K8o A2o Q9o K4s JTo 33 Q7s K6o T9s K3s J8s Q6s K2s Q8o K5o J9o Q5s T8s K4o J7s Q4s T9o Q7o K3o J8o Q3s 98s J6s Q6o T7s 22 K2o Q5o Q2s J5s T8o J7o Q4o J4s T6s 97s Q3o J3s T7o 87s 98o J6o 96s J2s Q2o T5s J5o T4s 86s 97o J4o T3s T6o 76s 95s 87o J3o 85s J2o T2s 96o T5o 75s 93s 94s 86o T4o 65s 95o 92s 84s T3o 76o 74s T2o 85o 64s 54s 83s 94o 75o 82s 93o 73s 53s 65o 84o 63s 92o 43s 54o 74o 72s 62s 64o 83o 52s 42s 82o 73o 53o 32s 63o 43o 72o 62o 52o 42o 32o'.split(' ');
+// percentile of each starting hand (0 = best, 1 = worst), at the middle of its own combos
+const PRE_PCT = (() => {
+  const m = new Map(); let cum = 0;
+  for (const h of PRE_ORDER) { const k = h.length === 2 ? 6 : h[2] === 's' ? 4 : 12; m.set(h, (cum + k / 2) / 1326); cum += k; }
+  return m;
+})();
+function prePct(hole) {
+  let a = hole[0] >> 2, b = hole[1] >> 2; if (b > a) [a, b] = [b, a];
+  const key = RANKS[a] + RANKS[b] + (a === b ? '' : (hole[0] & 3) === (hole[1] & 3) ? 's' : 'o');
+  return PRE_PCT.get(key);
+}
 
 /* ================= game engine ================= */
 const CANCEL = { cancel: true };
@@ -620,9 +650,9 @@ function newGame() {
   if (waitResolve) waitResolve();
   const [sb, bb] = S.blinds.split('/').map(Number);
   const cfg = { stack: S.stack, sb, bb };
-  const players = [{ name: 'You', tag: 'You', human: true, style: { tight: .55, aggr: .55, bluff: .08 } }];
-  for (let i = 0; i < S.opponents; i++) players.push({ ...BOTS[i], style: BOTS[i] });
-  players.forEach((p, i) => Object.assign(p, { id: i, stack: cfg.stack, buyins: cfg.stack, out: false, hole: [], bet: 0, total: 0, folded: false, allIn: false, inHand: false, action: '', winner: false, handLabel: '' }));
+  const players = [{ name: 'You', tag: 'You', human: true, style: { tight: .55, aggr: .55, bluff: .08, vpip: .25, pfr: .18 } }];
+  for (const b of lineupBots()) players.push({ ...b, style: b });
+  players.forEach((p, i) => Object.assign(p, { id: i, st: { hands: 0, vpip: 0, pfr: 0, agg: 0, calls: 0 }, stack: cfg.stack, buyins: cfg.stack, out: false, hole: [], bet: 0, total: 0, folded: false, allIn: false, inHand: false, action: '', winner: false, handLabel: '' }));
   G = { cfg, players, button: (Math.random() * players.length) | 0, board: [], deck: [], handNo: 0, street: '', currentBet: 0, minRaise: bb,
     turn: -1, phase: 'hand', reveal: false, highlight: null, banner: '', humanResolve: null, eqCache: {}, revealEq: null,
     stats: { won: 0, biggest: 0 } };
@@ -684,7 +714,8 @@ function put(p, amt) { amt = Math.max(0, Math.min(amt, p.stack)); p.stack -= amt
 
 async function playHand(gen) {
   const P = G.players, { sb, bb } = G.cfg;
-  for (const p of P) Object.assign(p, { hole: [], bet: 0, total: 0, folded: false, allIn: false, inHand: isLive(p), action: '', winner: false, handLabel: '' });
+  for (const p of P) Object.assign(p, { hole: [], bet: 0, deadBet: 0, total: 0, folded: false, allIn: false, inHand: isLive(p), action: '', winner: false, handLabel: '', vp: false, pr: false });
+  for (const p of P) if (p.inHand) p.st.hands++;
   G.handNo++; G.board = []; G.deck = shuffled(); G.street = 'preflop'; G.phase = 'hand';
   G.reveal = false; G.highlight = null; G.banner = ''; G.eqCache = {}; G.revealEq = null;
   G.button = nextIn(G.button, p => p.inHand);
@@ -736,7 +767,7 @@ function computePositions() {
   }
   G.pos = pos;
 }
-function collect() { for (const p of G.players) p.bet = 0; }
+function collect() { for (const p of G.players) { p.bet = 0; p.deadBet = 0; } }
 function startReveal() {
   const alive = notFolded();
   if (!G.reveal) { G.reveal = true; log(`Cards up: ${alive.map(p => `${p.name} ${cardsSpan(p.hole)}`).join(', ')}`, 'act'); }
@@ -787,13 +818,22 @@ function applyAction(i, a) {
   p.acted = true; p.facedAt = G.currentBet;
   return raised;
 }
+// reads: VPIP = put money in voluntarily before the flop (blinds don't count), PFR = raised before the flop,
+// AGG = share of bets and raises among calls, bets and raises after the flop
+function markVpip(p) { if (!p.vp) { p.vp = true; p.st.vpip++; } }
+function readsLine(p) {
+  const t = p.st; if (t.hands < 5) return `reading… ${t.hands} ${t.hands === 1 ? 'hand' : 'hands'}`;
+  const pc = (a, b) => Math.round(100 * a / b) + '%', post = t.agg + t.calls;
+  return `VPIP ${pc(t.vpip, t.hands)} · PFR ${pc(t.pfr, t.hands)} · AGG ${post ? pc(t.agg, post) : '–'}`;
+}
 function doAction(i, a) {
   const p = G.players[i], toCall = G.currentBet - p.bet;
   if (a.type === 'check' && toCall > 0) a = { type: 'fold' };
-  if (a.type === 'fold') { p.folded = true; p.bet = 0; p.action = 'Fold'; log(vb(p, 'folds', 'fold'), 'act'); return false; }
+  if (a.type === 'fold') { p.folded = true; p.deadBet = p.bet; p.bet = 0; p.action = 'Fold'; log(vb(p, 'folds', 'fold'), 'act'); return false; }
   if (a.type === 'check') { p.action = 'Check'; log(vb(p, 'checks', 'check'), 'act'); return false; }
   if (a.type === 'call') {
     const amt = put(p, toCall);
+    if (amt > 0) { if (G.street === 'preflop') markVpip(p); else p.st.calls++; }
     p.action = p.allIn ? `All-in ${fmt(p.bet)}` : `Call ${fmt(amt)}`;
     log(`${vb(p, 'calls', 'call')} ${fmt(amt)}${p.allIn ? (p.human ? ' and are all-in' : ' and is all-in') : ''}`, 'act');
     return false;
@@ -805,6 +845,7 @@ function doAction(i, a) {
   const by = to - G.currentBet, wasBet = G.currentBet === 0;
   if (by >= G.minRaise) G.minRaise = by;
   G.currentBet = to;
+  if (G.street === 'preflop') { markVpip(p); if (!p.pr) { p.pr = true; p.st.pfr++; } } else p.st.agg++;
   p.action = p.allIn ? `All-in ${fmt(to)}` : `${wasBet ? 'Bet' : 'Raise'} ${fmt(to)}`;
   log(`${wasBet ? vb(p, 'bets', 'bet') : vb(p, 'raises to', 'raise to')} ${fmt(to)}${p.allIn ? (p.human ? ' and are all-in' : ' and is all-in') : ''}`, 'act');
   return true;
@@ -823,9 +864,6 @@ async function botTurn(p, gen) {
 
 function botDecide(p) {
   const L = legal(p), st = p.style, opp = Math.max(1, notFolded().length - 1), d = DIFF[S.difficulty] || DIFF.normal;
-  const eq = mcEquity(p.hole, G.board, opp, d.iters);
-  // "Heads-up strength": chance of beating one random hand, so thresholds work at any table size.
-  const h = Math.pow(eq, 1 / opp) + (Math.random() - .5) * d.noise;
   const r = Math.random(), pre = G.board.length === 0, stackAll = p.stack + p.bet, bb = G.cfg.bb;
   const sizeTo = frac => {
     let to = G.currentBet + (L.pot + L.toCallFull) * frac;
@@ -843,16 +881,27 @@ function botDecide(p) {
   };
   const call = { type: 'call' }, check = { type: 'check' }, fold = { type: 'fold' };
   if (pre) {
+    // Before the flop each style plays its own share of the best starting hands (vpip) and raises the top part
+    // of that (pfr). Facing raises shrinks those shares, a short table widens them, and calling stations
+    // stick around after a raise more than tight players do.
+    const pp = prePct(p.hole) + (Math.random() - .5) * d.noise * .5;
+    const dealt = G.players.filter(q => q.inHand).length;
+    const widen = Math.min(2.6, Math.pow(6 / Math.max(2, dealt), .85));
+    const face = G.currentBet <= bb ? 1 : G.currentBet <= bb * 4.5 ? .45 : G.currentBet <= bb * 12 ? .22 : .1;
+    const stick = face < 1 ? 1 + (1 - st.tight) * .9 : 1;
     const cost = L.toCallFull / stackAll;
-    const playT = 0.50 + st.tight * 0.10 + cost * 0.32 - (opp === 1 ? 0.05 : 0);
-    const raiseT = 0.61 + st.tight * 0.05 - st.aggr * 0.06 + cost * 0.22;
-    if (L.toCallFull === 0) return (L.canRaise && h > raiseT && r < .35 + st.aggr * .6) ? preRaise() : check;
-    if (L.canRaise && h > raiseT && r < .3 + st.aggr * .6) return preRaise();
-    if (h > playT) return call;
-    if (L.canRaise && r < st.bluff * .45 && cost < .08) return preRaise();
-    if (cost < .025 && h > playT - .07) return call;
+    const playR = Math.min(1, st.vpip * widen * face * stick / (1 + cost * 2));
+    const raiseR = Math.min(1, st.pfr * widen * face * (face < 1 ? .55 : 1));
+    if (L.toCallFull === 0) return (L.canRaise && pp < raiseR) ? preRaise() : check;
+    if (L.canRaise && pp < raiseR) return preRaise();
+    if (pp < playR) return call;
+    if (L.canRaise && face === 1 && r < st.bluff * .3 && pp < .75) return preRaise();
+    if (L.toCallFull <= G.cfg.sb && pp < playR * 1.35) return call;
     return fold;
   }
+  const eq = mcEquity(p.hole, G.board, opp, d.iters);
+  // strength for the bet / raise thresholds: chance of beating one random hand on this board
+  const h = mcEquity(p.hole, G.board, 1, d.iters) + (Math.random() - .5) * d.noise;
   const potOdds = L.toCallFull / (L.pot + L.toCallFull);
   if (L.toCallFull === 0) {
     if (L.canRaise && h > 0.72 - st.aggr * 0.1 && r < .5 + st.aggr * .5) return sizeTo(.45 + .4 * Math.random());
@@ -1017,9 +1066,11 @@ function renderSeats() {
     if (ev != null && !p.folded) { if (!e) { e = document.createElement('div'); e.className = 'eqbadge'; plate.appendChild(e); } e.textContent = pct(ev, 1); }
     else if (e) e.remove();
     const b = betEls[i];
-    const isBB = G.street === 'preflop' && i === G.bbSeat && p.bet === G.bbPost && !p.folded;
-    const isSB = !isBB && G.street === 'preflop' && i === G.sbSeat && p.bet === G.sbPost && !p.folded;
-    if (p.bet > 0) { b.hidden = false; b.innerHTML = `<span class="chip" style="--c:${chipColor(p.bet)}"></span>${fmt(p.bet)}${isBB ? '<span class="btag" title="Big blind">BB</span>' : ''}${isSB ? '<span class="btag sb" title="Small blind">SB</span>' : ''}`; }
+    const shown = p.bet || p.deadBet || 0;
+    const isBB = G.street === 'preflop' && i === G.bbSeat && shown === G.bbPost;
+    const isSB = !isBB && G.street === 'preflop' && i === G.sbSeat && shown === G.sbPost;
+    b.classList.toggle('dead', !p.bet && shown > 0);
+    if (shown > 0) { b.hidden = false; b.innerHTML = `<span class="chip" style="--c:${chipColor(shown)}"></span>${fmt(shown)}${isBB ? '<span class="btag" title="Big blind">BB</span>' : ''}${isSB ? '<span class="btag sb" title="Small blind">SB</span>' : ''}`; }
     else b.hidden = true;
   });
   layout();
@@ -1149,7 +1200,7 @@ function renderSide() {
   $('#st-big').textContent = fmt(G.stats.biggest);
   const rows = [...G.players].sort((a, b) => (b.stack + b.total) - (a.stack + a.total)).map(p => {
     const n = p.stack + (G.street !== 'showdown' ? p.total : 0) - p.buyins;
-    return `<tr><td>${p.name}<span class="style">${p.human ? (S.autoplay ? 'Autoplay' : 'Human') : p.tag}</span></td><td>${fmt(p.stack)}</td><td class="${n > 0 ? 'pos' : n < 0 ? 'neg' : ''}">${n > 0 ? '+' : ''}${fmt(n)}</td></tr>`;
+    return `<tr><td>${p.name}<span class="style">${p.human ? (S.autoplay ? 'Autoplay' : 'Human') : p.tag}</span><span class="reads" title="${p.st.hands} hands played">${readsLine(p)}</span></td><td>${fmt(p.stack)}</td><td class="${n > 0 ? 'pos' : n < 0 ? 'neg' : ''}">${n > 0 ? '+' : ''}${fmt(n)}</td></tr>`;
   }).join('');
   const sEl = $('#standings'); if (sEl.innerHTML !== rows) sEl.innerHTML = rows;
 }
@@ -1217,9 +1268,41 @@ q.auto.addEventListener('change', () => {
   renderAll();
 });
 
+// colour theme: Light or Dark, chosen by the player and remembered; until a choice is made it follows the system
+const themeMQ = window.matchMedia('(prefers-color-scheme: dark)');
+function currentTheme() { return document.documentElement.dataset.theme || (themeMQ.matches ? 'dark' : 'light'); }
+function markTheme() { const t = currentTheme(); document.querySelectorAll('#theme-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === t))); }
+$('#theme-switch').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.documentElement.dataset.theme = b.dataset.themeSet;
+  try { localStorage.setItem('brh-theme', b.dataset.themeSet); } catch (err) {}
+  markTheme();
+});
+themeMQ.addEventListener('change', markTheme);
+markTheme();
+
 // settings dialog
+// the opponents are picked by name, so any mix of styles can sit at the table (seats follow the BOTS order)
+function lineupBots() {
+  const picked = Array.isArray(S.lineup) ? BOTS.filter(b => S.lineup.includes(b.name)) : [];
+  return picked.length ? picked : BOTS.slice(0, Math.max(1, Math.min(BOTS.length, S.opponents || BOTS.length)));
+}
+$('#set-lineup').insertAdjacentHTML('beforeend', BOTS.map(b =>
+  `<label><input type="checkbox" value="${b.name}"><span>${b.name}</span><span class="tg">${b.tag}</span></label>`).join(''));
+function updateLineupCount() {
+  const n = $('#set-lineup').querySelectorAll('input:checked').length;
+  $('#set-opp-n').textContent = n === 1 ? '· 1 (heads-up)' : `· ${n}`;
+}
+$('#set-lineup').addEventListener('change', e => {
+  // at least one opponent has to stay at the table
+  if (!$('#set-lineup').querySelector('input:checked')) e.target.checked = true;
+  updateLineupCount();
+});
 function openSettings() {
-  $('#set-opp').value = S.opponents; $('#set-stack').value = S.stack; $('#set-blinds').value = S.blinds;
+  const chosen = lineupBots().map(b => b.name);
+  $('#set-lineup').querySelectorAll('input').forEach(c => { c.checked = chosen.includes(c.value); });
+  updateLineupCount();
+  $('#set-stack').value = S.stack; $('#set-blinds').value = S.blinds;
   $('#set-diff').value = S.difficulty; $('#set-rebuy').checked = S.botRebuy;
   $('#settings').hidden = false; $('#set-go').focus();
 }
@@ -1228,7 +1311,8 @@ $('#set-cancel').addEventListener('click', () => { $('#settings').hidden = true;
 $('#settings').addEventListener('click', e => { if (e.target.id === 'settings') $('#settings').hidden = true; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#settings').hidden = true; });
 $('#set-go').addEventListener('click', () => {
-  S.opponents = +$('#set-opp').value; S.stack = +$('#set-stack').value; S.blinds = $('#set-blinds').value;
+  S.lineup = [...$('#set-lineup').querySelectorAll('input:checked')].map(c => c.value); S.opponents = S.lineup.length;
+  S.stack = +$('#set-stack').value; S.blinds = $('#set-blinds').value;
   S.difficulty = $('#set-diff').value; S.botRebuy = $('#set-rebuy').checked; saveS();
   $('#settings').hidden = true;
   showView('table');
