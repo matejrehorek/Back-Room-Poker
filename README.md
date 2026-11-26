@@ -1,4 +1,4 @@
-# Back Room Hold'em
+# Back Room Poker (Hold'em)
 
 Free play-money No-Limit Texas Hold'em in the browser, against up to five bots, with live equity and an exact odds calculator. It is part of [601101.org](https://601101.org), where it is linked from the footer.
 
